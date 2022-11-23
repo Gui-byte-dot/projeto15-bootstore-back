@@ -8,7 +8,10 @@
     "dev": "npx nodemon src/index.js",
     "start": "node src/index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "backend",
+    "ecommerce"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
