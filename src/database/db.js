@@ -15,3 +15,4 @@ try{
 export const usersCollection = db.collection("users");
 export const sessionsCollection = db.collection("sessions");
 export const productCollection = db.collection("product");
+export const purchaseCollection = db.collection("purcahse");
