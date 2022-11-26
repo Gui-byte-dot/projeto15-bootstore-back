@@ -1,4 +1,4 @@
-import { productCollection, cartsCollection, purchasesCollection } from "../database/db.js";
+import { productCollection, cartsCollection, purchasesCollection, sessionsCollection } from "../database/db.js";
 
 
 export async function GetProducts(req,res){
@@ -58,5 +58,15 @@ export async function Checkout (req,res){
   } catch (error) {
     console.log(error)
     res.status(500).send(error)
+  }
+}
+
+export async function Logout(req,res){
+  try{
+    const token = req.header('Authorization');
+    await sessionsCollection.deleteOne({token, userId:req.user._id});
+    
+  }catch(err){
+    console.log(err);
   }
 }
