@@ -53,20 +53,24 @@ export async function AddProductCart(req,res) {
 export async function GetUserCart(req,res){
   try {
     const userCart = await cartsCollection.findOne({userId: req.user._id})
-    delete userCart._id
-    delete userCart.userId
-    let productList = userCart?.products;
-    
-    if(userCart !== null) {
-      productList = productList.reduce((list, cartProduct) => {
-        cartProduct.id = cartProduct._id;
-        delete cartProduct._id;
-        list.push(cartProduct)
-        return list
-      }, [])
-    }
+    if(userCart !== null){
+      delete userCart._id
+      delete userCart.userId
+      let productList = userCart?.products;
+      
+      if(userCart !== null) {
+        productList = productList.reduce((list, cartProduct) => {
+          cartProduct.id = cartProduct._id;
+          delete cartProduct._id;
+          list.push(cartProduct)
+          return list
+        }, [])
+      }
 
-    res.send(productList);
+      res.send(productList);
+    }else{
+      res.send([])
+    }
   } catch (error) {
     console.log(error)
     res.status(500).send(error)
