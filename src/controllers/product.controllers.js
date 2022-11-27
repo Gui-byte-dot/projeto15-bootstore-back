@@ -19,8 +19,13 @@ export async function AddProductCart(req,res) {
       price,
       img,
     }= req.body
+
     const cart = await cartsCollection.findOne({userId:req.user._id})
     if(cart!== null){
+      const product = await cartsCollection.findOne({ _id: cart._id, products: { $elemMatch: {_id: id}}})
+      if(product !== null) {
+        res.status(400).send({ message: 'product already in cart' });
+      }
       await cartsCollection.updateOne({ _id: cart._id }, { $push: { "products": {
         _id: id,
         name,
@@ -29,27 +34,36 @@ export async function AddProductCart(req,res) {
         img,
       } } })
     } else{
-      const product = await cartsCollection.findOne({ _id: cart._id, products: { $elemMatch: {_id: id}}})
-      if(product !== null) {
-        res.status(400).send({ message: 'product already in cart' });
-      }else{
-        await cartsCollection.insertOne({ products:[{
+      await cartsCollection.insertOne({ products:[{
           _id: id,
           name,
           description,
           price,
           img,
         }], userId: req.user._id })
-      }
     }
     res.send()
   } catch (error) {
+    console.error(error)
     res.status(500).send(error)
   }
   
 }
 
-export async function Checkout (req,res){
+export async function GetUserCart(req,res){
+  try {
+    const userCart = await cartsCollection.findOne({userId: req.user._id})
+    delete userCart._id
+    delete userCart.userId
+
+    res.send(userCart);
+  } catch (error) {
+    console.log(error)
+    res.status(500).send(error)
+  }
+}
+
+export async function Checkout(req,res){
   try {
     const { products } = req.body;
     await purchasesCollection.insertOne({products: products, userId: req.user._id});
