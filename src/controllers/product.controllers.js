@@ -1,3 +1,4 @@
+import { ObjectID } from "bson";
 import { productCollection, cartsCollection, purchasesCollection, sessionsCollection } from "../database/db.js";
 
 
@@ -22,10 +23,8 @@ export async function AddProductCart(req,res) {
 
     const cart = await cartsCollection.findOne({userId:req.user._id})
     if(cart!== null){
-      const product = await cartsCollection.findOne({ _id: cart._id, products: { $elemMatch: {_id: id}}})
-      if(product !== null) {
-        return res.status(400).send({ message: 'product already in cart' });
-      }else{
+      const product = await productCollection.findOne({_id: ObjectID(id)})
+      if(product !== null){
         await cartsCollection.updateOne({ _id: cart._id }, { $push: { "products": {
           _id: id,
           name,
@@ -33,6 +32,8 @@ export async function AddProductCart(req,res) {
           price,
           img,
         } } })
+      }else {
+        return res.status(400).send("product not found")
       }
     } else{
       await cartsCollection.insertOne({ products:[{
