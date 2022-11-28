@@ -24,15 +24,16 @@ export async function AddProductCart(req,res) {
     if(cart!== null){
       const product = await cartsCollection.findOne({ _id: cart._id, products: { $elemMatch: {_id: id}}})
       if(product !== null) {
-        res.status(400).send({ message: 'product already in cart' });
+        return res.status(400).send({ message: 'product already in cart' });
+      }else{
+        await cartsCollection.updateOne({ _id: cart._id }, { $push: { "products": {
+          _id: id,
+          name,
+          description,
+          price,
+          img,
+        } } })
       }
-      await cartsCollection.updateOne({ _id: cart._id }, { $push: { "products": {
-        _id: id,
-        name,
-        description,
-        price,
-        img,
-      } } })
     } else{
       await cartsCollection.insertOne({ products:[{
           _id: id,
