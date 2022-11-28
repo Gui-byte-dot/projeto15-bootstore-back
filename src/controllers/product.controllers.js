@@ -94,7 +94,7 @@ export async function Logout(req,res){
   try{
     const token = req.header('Authorization');
     await sessionsCollection.deleteOne({token, userId:req.user._id});
-    
+    res.send()
   }catch(err){
     console.log(err);
   }
